@@ -1,0 +1,18 @@
+---
+- name: Get VMX path if existing VM is running
+  shell: "'{{ wlc_vmrun_path }}' list | grep -F '{{ wlc_vm_safe_dst_full_path }}' || true"
+  register: wlc_vmx_path
+  when: wlc_vm_exists.stat.isdir is defined
+  changed_when: False
+- name: Stop VM if it is running
+  shell: "'{{ wlc_vmrun_path }}' stop '{{ wlc_vmx_path.stdout }}'"
+  when: wlc_vmx_path is defined and wlc_vmx_path.stdout != ""
+- name: Pause to allow VM to stop cleanly
+  pause: seconds=3
+  when: wlc_vmx_path is defined and wlc_vmx_path.stdout != ""
+- name: Remove existing VM path
+  file: path='{{ wlc_vm_safe_dst_full_path }}' state=absent
+- name: Create VM path
+  file: path='{{ wlc_vm_safe_dst_full_path }}' state=directory
+- name: Extract OVA using ovftool
+  command: "'/{{ wlc_ovftool_path.stdout }}' '{{ wlc_ova_source }}' '{{ wlc_vm_vmx_path }}'"

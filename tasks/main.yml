@@ -1,1 +1,9 @@
 ---
+- include: set_facts.yml
+- include: checks.yml
+- include: create_vm.yml
+- include: introspect.yml
+- include: tftp.yml
+- include: dhcp.yml
+- include: hosts.yml
+- include: cleanup.yml

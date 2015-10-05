@@ -1,1 +1,17 @@
 ---
+# Location of system TFTP plist file
+wlc_system_tftp_plist: /System/Library/LaunchDaemons/tftp.plist
+
+# Location of VMWare Fusion NAT interface DHCP configuration file
+wlc_dhcpd_conf_path: "/Library/Preferences/VMware Fusion/vmnet8/dhcpd.conf"
+
+# Location of the VMWare Fusion vmrun command-line utility
+wlc_vmrun_path: "/Applications/VMware\ Fusion.app/Contents/Library/vmrun"
+
+# Location of the VMWare Fusion vmnet-cli command-line utility
+wlc_vmnet_path: "/Applications/VMware Fusion.app/Contents/Library/vmnet-cli"
+
+# Regex variables
+wlc_vm_mgmt_ip_regex_match: '(.*)\..*$'
+wlc_vm_mgmt_ip_regex_replace: '\1.{{ wlc_vm_svc_ip_octet }}'
+wlc_vm_mgmt_gateway_regex_replace: '\1.2' 

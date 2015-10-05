@@ -1,0 +1,21 @@
+---
+- name: Wait for vWLC to provision
+  local_action: wait_for host={{ wlc_vm_ip_address }} port=443 delay=10 timeout=600
+  sudo: false
+- name: Remove DHCP reservation
+  blockinfile:
+    dest: '{{ wlc_dhcpd_conf_path }}'
+    marker: "# {mark} ANSIBLE MANAGED BLOCK - {{ wlc_vm_name }} {{ wlc_vm_ip_address }}"
+    content: ""
+  become: yes
+  when: not wlc_vm_persist_dhcp_reservation
+  notify:
+    - stop vmware networking
+    - start vmware networking
+- name: Remove TFTP config file
+  file: >
+    path="{{ wlc_tftp_path }}/ciscowlc.cfg"
+    state=absent
+  notify:
+    - stop user tftp daemon
+    - restore previous system tftp daemon

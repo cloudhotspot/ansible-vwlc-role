@@ -1,0 +1,9 @@
+---
+- name: Pad VM destination root path with /
+  set_fact: wlc_vm_padded_destination='{{ wlc_vm_root }}/'
+- name: Extract root directory name from padded VM root path
+  set_fact: wlc_vm_safe_dst="{{ wlc_vm_padded_destination | dirname }}"
+- name: Get full path to VM folder
+  set_fact: wlc_vm_safe_dst_full_path="{{ wlc_vm_safe_dst }}/{{ wlc_vm_name }}.vmwarevm"
+- name: Get full path fo VMX file
+  set_fact: wlc_vm_vmx_path="{{ wlc_vm_safe_dst_full_path }}/{{ wlc_vm_name }}.vmx"

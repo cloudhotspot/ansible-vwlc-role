@@ -1,0 +1,26 @@
+---
+- name: Check if TFTP daemon is running
+  shell: launchctl list | awk /com.apple.tftp/
+  become: yes
+  register: wlc_tftp_daemon_status
+  changed_when: wlc_tftp_daemon_status.stdout != ""
+  notify:
+    - stop system tftp daemon
+- name: Deploy TFTP plist
+  template: 
+    src: "tftp.plist.j2" 
+    dest: "{{ wlc_tftp_plist }}"
+    mode: 0644
+  become: yes
+- name: Ensure TFTP path exists
+  file: 
+    path: "{{ wlc_tftp_path }}"
+    state: directory
+    mode: 0777
+- name: Deploy WLC file
+  template:
+    src: "{{ wlc_config_file | default('ciscowlc.cfg.j2') }}"
+    dest: "{{ wlc_tftp_path }}/ciscowlc.cfg"
+  changed_when: true
+  notify:
+    - start user tftp daemon

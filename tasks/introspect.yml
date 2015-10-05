@@ -1,0 +1,24 @@
+---
+- name: Configure management interface as Share with my Mac
+  lineinfile: >
+    dest='{{ wlc_vm_vmx_path }}'
+    regexp='^ethernet0.connectionType ='
+    line='ethernet0.connectionType = "nat"'
+  notify:
+    - start vm
+    - stop vm
+- meta: flush_handlers
+- name: Get vmnet8 IP address
+  shell: ifconfig vmnet8 | awk '/inet/{print $2}'
+  register: wlc_vmnet8_ip_address
+  changed_when: False
+- name: Get Management interface MAC address
+  shell: cat '{{ wlc_vm_vmx_path }}' | awk -F'"' '/ethernet0.generatedAddress = /{print $2}'
+  register: wlc_vm_mac_address
+  changed_when: False
+- name: Set VM MAC access fact
+  set_fact: wlc_vm_mac_address={{ wlc_vm_mac_address.stdout }}
+- name: Set VM IP address fact
+  set_fact: wlc_vm_ip_address={{ wlc_vmnet8_ip_address.stdout | regex_replace(wlc_vm_mgmt_ip_regex_match, wlc_vm_mgmt_ip_regex_replace) }}
+- name: Set VM IP gateway fact
+  set_fact: wlc_vm_ip_gateway={{ wlc_vmnet8_ip_address.stdout | regex_replace(wlc_vm_mgmt_ip_regex_match, wlc_vm_mgmt_gateway_regex_replace) }}

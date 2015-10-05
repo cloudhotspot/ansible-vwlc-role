@@ -2,12 +2,14 @@
 
 An Ansible role for automating deployment of the Cisco Virtual Wireless Controller (vWLC) on VMWare Fusion.  
 
+The role configures Mac OS X TFTP and VMWare DHCP to enable the AutoInstall feature of the vWLC.
+
 ##Requirements
 
 - Mac OS X
 - <a href="http://www.vmware.com/products/fusion" target="_blank">VMWare Fusion</a> 7.x or higher
 - <a href="https://www.vmware.com/support/developer/ovf/" target="_blank">VMWare OVF Tools</a> 4.1 or higher (VMWare account may be required)
-- <a href="https://software.cisco.com/download/release.html?mdfid=284364978&softwareid=282046477&release=3.14.1S&relind=AVAILABLE&rellifecycle=ED&reltype=latest" target="_blank">Cisco CSR 1000v OVA Image</a> (CCO login required)
+- <a href="https://software.cisco.com/download/release.html?mdfid=284464214&softwareid=280926587&release=8.0.120.0&relind=AVAILABLE&rellifecycle=ED&reltype=latest" target="_blank">Cisco vWLC OVA Image</a> (CCO login required)
 
 ##Role Variables
 
@@ -37,26 +39,34 @@ If the virtual machine already exists, by default the role will fail.  To overwr
 # Name of the Cisco vWLC virtual machine that will be created
 wlc_vm_name: "wlc01"
 
-# Last Octet of IP address assigned to CSR 1000V management interface.  This value should be between 3 and 127.
-csr_vm_mgmt_ip_octet: "120"
-
-# Management Interface - 0 = Ethernet0/GigabitEthernet1, 1 = Ethernet1/GigabitEthernet2, 2 = Ethernet2/GigabitEthernet2
-csr_vm_mgmt_interface: 2
+# Last Octet of IP address assigned to vWLC service port.  This value should be between 3 and 127.
+wlc_vm_svc_ip_octet: "121"
 
 # Keep the DHCP reservation used for provisioning
-csr_vm_persist_dhcp_reservation: yes
+wlc_vm_persist_dhcp_reservation: yes
 
-# CSR 1000V configuration variables
-csr_name: csr01
-csr_admin_username: admin
-csr_admin_password: Pass1234
-csr_domain_name: cloudhotspot.co
+# TFTP settings
+wlc_tftp_path: /Users/Shared/tftp
 
-# Set to 'True' or 'False'
-csr_enable_scp: False
+# Location of TFTP plist file
+wlc_tftp_plist: /Users/Shared/tftp.plist
 
-# Set to 'ax' or 'appx'
-csr_license_level: appx
+# WLC configuration settings
+wlc_name: wlc01
+wlc_admin_username: admin
+wlc_admin_password: Pass1234
+
+wlc_mgmt_ip_address: 192.168.1.6
+wlc_mgmt_ip_mask: 255.255.255.0
+wlc_mgmt_ip_gateway: 192.168.1.254
+wlc_dhcp_server_ip_address: 192.168.1.254 
+wlc_virtual_ip_address: 1.1.1.1
+
+wlc_mobility_group_name: "{{ wlc_name }}"
+wlc_rf_network_name: "{{ wlc_name }}"
+wlc_ntp_server: 64.99.80.30
+wlc_ntp_interval: 3600
+wlc_ssid: Test SSID
 ```
 
 Dependencies
@@ -72,11 +82,9 @@ This playbook is designed to run locally on local OS X host so you should config
     - hosts: localhost
       connection: local
       roles:
-         - { role: mixja.csr1000v, csr_vm_overwrite: true, csr_ova_source: /path/to/ova/source, csr_ova_root: /path/to/vm/root  }
+         - { role: mixja.vwlc, wlc_vm_overwrite: true, wlc_ova_source: /path/to/ova/source, wlc_ova_root: /path/to/vm/root  }
 
-A sample playbook is provided at <a href="https://github.com/cloudhotspot/ansible-csr1000v-playbook">https://github.com/cloudhotspot/ansible-csr1000v-playbook</a>
-
-Please also take note the following issue - https://github.com/cloudhotspot/ansible-csr1000v-role/issues/2
+A sample playbook is provided at <a href="https://github.com/cloudhotspot/ansible-vwlc-playbook">https://github.com/cloudhotspot/ansible-vwlc-playbook</a>
 
 License
 -------

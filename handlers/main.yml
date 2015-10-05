@@ -1,1 +1,29 @@
 ---
+- name: stop vmware networking
+  command: '"{{ wlc_vmnet_path }}" --stop'
+  become: yes
+- name: start vmware networking
+  command: '"{{ wlc_vmnet_path }}" --start'
+  become: yes
+- name: start vm
+  command: '"{{ wlc_vmrun_path }}" start "{{ wlc_vm_vmx_path }}" nogui'
+  become: no
+- name: stop vm
+  command: '"{{ wlc_vmrun_path }}" stop "{{ wlc_vm_vmx_path }}"'
+  become: no
+- name: stop vm hard
+  command: '"{{ wlc_vmrun_path }}" stop "{{ wlc_vm_vmx_path }}" hard'
+  become: no
+- name: stop user tftp daemon
+  command: launchctl unload '{{ wlc_tftp_plist }}'
+  become: yes
+- name: stop system tftp daemon
+  command: launchctl unload '{{ wlc_system_tftp_plist }}'
+  become: yes
+- name: restore previous system tftp daemon
+  command: launchctl load '{{ wlc_system_tftp_plist }}'
+  become: yes
+  when: wlc_tftp_daemon_status.stdout != ""
+- name: start user tftp daemon
+  command: launchctl load '{{ wlc_tftp_plist }}'
+  become: yes
