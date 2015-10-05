@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   author: Justin Menga
-  description: Deploys the Cisco Virtual Wireless Controller virtual router to VMWare Fusion on OS X
+  description: Deploys the Cisco Virtual Wireless Controller to VMWare Fusion on OS X
   company: CloudHotspot
   license: BSD
   min_ansible_version: 1.9
