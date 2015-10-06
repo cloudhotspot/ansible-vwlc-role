@@ -1,5 +1,5 @@
 ---
-- name: Configure management interface as Share with my Mac
+- name: Configure service port as Share with my Mac
   lineinfile: >
     dest='{{ wlc_vm_vmx_path }}'
     regexp='^ethernet0.connectionType ='
@@ -8,14 +8,16 @@
     - start vm
     - stop vm
 - meta: flush_handlers
+- name: Get service port MAC address
+  shell: cat '{{ wlc_vm_vmx_path }}' | awk -F'"' '/ethernet0.generatedAddress = /{print $2}'
+  register: wlc_vm_mac_address
+  changed_when: False
 - name: Get vmnet8 IP address
   shell: ifconfig vmnet8 | awk '/inet/{print $2}'
   register: wlc_vmnet8_ip_address
   changed_when: False
-- name: Get Management interface MAC address
-  shell: cat '{{ wlc_vm_vmx_path }}' | awk -F'"' '/ethernet0.generatedAddress = /{print $2}'
-  register: wlc_vm_mac_address
-  changed_when: False
+- name: Set host IP address fact
+  set_fact: wlc_host_ip_address={{ wlc_vmnet8_ip_address.stdout }}
 - name: Set VM MAC access fact
   set_fact: wlc_vm_mac_address={{ wlc_vm_mac_address.stdout }}
 - name: Set VM IP address fact
