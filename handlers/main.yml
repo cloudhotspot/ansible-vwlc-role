@@ -5,8 +5,11 @@
 - name: start vmware networking
   command: '"{{ wlc_vmnet_path }}" --start'
   become: yes
-- name: start vm
+- name: start vm headless
   command: '"{{ wlc_vmrun_path }}" start "{{ wlc_vm_vmx_path }}" nogui'
+  become: no
+- name: start vm
+  command: '"{{ wlc_vmrun_path }}" start "{{ wlc_vm_vmx_path }}"'
   become: no
 - name: stop vm
   command: '"{{ wlc_vmrun_path }}" stop "{{ wlc_vm_vmx_path }}"'
@@ -27,3 +30,5 @@
 - name: start user tftp daemon
   command: launchctl load '{{ wlc_tftp_plist }}'
   become: yes
+- name: pause three seconds
+  pause: seconds=3
