@@ -19,11 +19,11 @@
         default-lease-time 1200;
         max-lease-time 1200;  
         option routers {{ wlc_vm_ip_gateway }};
-        next-server {{ wlc_vmnet8_ip_address.stdout }};
+        next-server {{ wlc_host_ip_address }};
       }
   become: yes
   notify:
     - stop vmware networking
     - start vmware networking
-    - start vm
+    - start vm headless
 - meta: flush_handlers
