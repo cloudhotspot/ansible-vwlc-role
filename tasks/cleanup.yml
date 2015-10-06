@@ -12,10 +12,19 @@
   notify:
     - stop vmware networking
     - start vmware networking
+- name: Remove TFTP plist file
+  file: >
+    path="{{ wlc_tftp_plist }}"
+    state=absent
+  become: yes
+  notify:
+    - stop system tftp daemon
+    - restore previous system tftp daemon
 - name: Remove TFTP config file
   file: >
     path="{{ wlc_tftp_path }}/ciscowlc.cfg"
     state=absent
+  become: yes
   notify:
     - stop user tftp daemon
     - restore previous system tftp daemon
