@@ -8,6 +8,14 @@ galaxy_info:
   categories:
   - networking
   - system
+  galaxy_tags:
+  - vwlc
+  - wlc
+  - cisco
+  - vmware
+  - fusion
+  - wireless
+
 
 dependencies:
   - { role: yaegashi.blockinfile }
